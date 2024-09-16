@@ -1,0 +1,15 @@
+---
+# vm options
+os_cloud: "openstack"
+srs_deployment: "srs_deployment"
+flavor: "8cpu.16ram"
+key_name: "{{ key_name }}"
+security_group: "Allow All"
+network_name: "default"
+key_name: "default"
+os_cloud: "openstack"
+image: "Ubuntu 20.04"
+volume_size: "30"
+srs_user: "ubuntu"
+
+# deployment options

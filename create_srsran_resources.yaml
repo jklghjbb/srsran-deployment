@@ -1,0 +1,31 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Create a single node VM without data nics
+      register: srs_vm
+      ignore_errors: no
+      register: srs_vm
+      os_server:
+        state: present
+        name: "{{ srs_deployment }}"
+        flavor: "{{ flavor }}"
+        image: "{{ image }}"
+        wait: yes
+        key_name: "{{ key_name }}"
+        security_groups: "{{ security_group }}"
+        network: "{{ network_name }}"
+        boot_from_volume: true
+        terminate_volume: true
+        volume_size: "{{ volume_size }}"
+        auto_floating_ip: no
+    
+    - name: Set srs_mgmt_ip without data NICs
+      set_fact:
+          srs_mgmt_ip: "{{ (srs_vm.server.addresses[network_name] | selectattr('version', 'equalto', 4) | first).addr }}"
+
+    - name: template out the host.j2
+      when: srs_mgmt_ip is defined
+      template:
+        src: "hosts.j2"
+        dest: inventory
+        force: yes
