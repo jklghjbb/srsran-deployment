@@ -1,0 +1,5 @@
+---
+- hosts: k8s_hosts
+  roles:
+    - ensure-containerd
+    - k8s-deploy

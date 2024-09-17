@@ -1,0 +1,4 @@
+distribution: rhel
+containerd_repository_url: https://download.docker.com/linux/{{ distribution }}/$releasever/$basearch/stable
+containerd_signing_key: https://download.docker.com/linux/{{ distribution }}/gpg
+containerd_package_name: containerd.io

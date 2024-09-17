@@ -1,0 +1,13 @@
+- name: Configure kubelet to allow pods for syscalls
+  become: yes
+  template:
+    src: config.yaml.j2
+    dest: "{{ kubectl_config_path }}"
+    mode: 0644
+
+- name: restart kubelet after kubelet config for syscalls
+  become: yes
+  systemd:
+    state: restarted
+    daemon_reload: true
+    name: kubelet

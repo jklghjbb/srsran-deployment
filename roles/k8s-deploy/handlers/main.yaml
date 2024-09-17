@@ -1,0 +1,11 @@
+---
+- name: Restart kubelet
+  become: true
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: kubelet
+
+- name: Dnf makecache
+  become: true
+  ansible.builtin.command: "dnf -q makecache -y --disablerepo='*' --enablerepo='kubernetes'"

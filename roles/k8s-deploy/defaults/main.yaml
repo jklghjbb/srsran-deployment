@@ -1,0 +1,34 @@
+---
+kubernetes_version: '1.27'
+kubernetes_version_kubeadm: 'stable-{{ kubernetes_version }}'
+kubernetes_yum_arch: x86_64
+kubernetes_packages:
+  - name: "kubelet"
+    state: present
+  - name: "kubectl"
+    state: present
+  - name: "kubeadm"
+    state: present
+
+
+kubernetes_ignore_preflight_errors: 'all'
+kubernetes_allow_pods_on_master: true
+
+# sysctl_file_path to add sysctl conf to
+sysctl_file_path: "/etc/sysctl.d/99-sysctl.conf"
+
+kubectl_config_path: "/var/lib/kubelet/config.yaml"
+kubernetes_kubeadm_init_extra_opts: ""
+kubernetes_join_command_extra_opts: ""
+
+# Flannel config files.
+kubernetes_flannel_manifest_file: https://raw.githubusercontent.com/coreos/flannel/v0.19.2/Documentation/kube-flannel.yml
+
+kubernetes_pod_network:
+  cni: 'flannel'
+  cidr: '10.244.0.0/16'
+
+cri_socket: "unix:///run/containerd/containerd.sock"
+# Containerd and kubelet cgroup driver
+cgroup_driver: "systemd"
+dns_conf_path: "/run/systemd/resolve/resolv.conf"

@@ -1,0 +1,92 @@
+- name: Include OS-specific variables
+  ansible.builtin.include_vars: "{{ zj_distro_os }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yaml"
+    - "{{ ansible_distribution }}.{{ ansible_architecture }}.yaml"
+    - "{{ ansible_distribution }}.yaml"
+    - "{{ ansible_os_family }}.yaml"
+    - "default.yaml"
+  loop_control:
+    loop_var: zj_distro_os
+
+- name: Add containerd repository
+  become: true
+  when:
+    - containerd_repository_url is defined
+    - ansible_os_family == 'RedHat'
+  block:
+    - name: Add signing key
+      ansible.builtin.rpm_key:
+        key: "{{ containerd_signing_key }}"
+        state: present
+
+    - name: Add repository into repo.d list
+      ansible.builtin.yum_repository:
+        name: docker
+        description: docker repository
+        baseurl: "{{ containerd_repository_url }}"
+        enabled: true
+        gpgcheck: true
+        gpgkey: "{{ containerd_signing_key }}"
+
+- name: Add containerd repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb {{ containerd_repository_url }} {{ ansible_distribution_release }} main"
+    state: present
+  when:
+    - containerd_repository_url is defined
+    - ansible_os_family == 'Debian'
+
+- name: Ensure br_netfilter is enabled.
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+  become: true
+
+- name: Install containerd
+  ansible.builtin.apt:
+    name: "{{ containerd_package_name }}"
+    state: present
+  become: true
+  retries: 10           # Number of retries
+  delay: 15            # Wait for 10 seconds between retries
+  until: result is succeeded  # Retry until the task succeeds
+  register: result     # Register the result to be used in 'until'
+
+- name: Ensure folder for configuration
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure containerd
+  ansible.builtin.template:
+    src: "templates/config.j2.toml"
+    dest: /etc/containerd/config.toml
+    mode: "0644"
+  become: true
+
+- name: Restart containerd
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: true
+  become: true
+
+- name: Enable and start service
+  ansible.builtin.service:
+    name: containerd
+    enabled: true
+    state: started
+  become: true
+
+- name: Ensure crictl configuration exists
+  ansible.builtin.copy:
+    mode: '0755'
+    src: "crictl.yaml"
+    dest: "/etc/crictl.yaml"
+  become: true

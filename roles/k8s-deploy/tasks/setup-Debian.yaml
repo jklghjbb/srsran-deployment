@@ -1,0 +1,14 @@
+---
+- name: Install GPG Key
+  become: yes
+  shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key | gpg --dearmor -o /usr/share/keyrings/kubernetes-apt-keyring.gpg
+
+- name: Add repository
+  become: yes
+  ansible.builtin.apt_repository:
+    repo:
+      "deb
+       [signed-by=/usr/share/keyrings/kubernetes-apt-keyring.gpg]
+       https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /"
+    state: present

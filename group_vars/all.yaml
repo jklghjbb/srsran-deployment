@@ -2,14 +2,15 @@
 # vm options
 os_cloud: "openstack"
 srs_deployment: "srs_deployment"
-flavor: "8cpu.16ram"
+flavor: "16cpu.32ram"
 key_name: "{{ key_name }}"
 security_group: "Allow All"
-network_name: "default"
-key_name: "default"
+network_name: "SNE-LAB-VM"
+key_name: "hongjie"
 os_cloud: "openstack"
-image: "Ubuntu 20.04"
+image: "Ubuntu 22.04"
 volume_size: "30"
 srs_user: "ubuntu"
 
+# ssh key path
 # deployment options

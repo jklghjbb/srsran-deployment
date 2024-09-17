@@ -1,2 +1,10 @@
 [srs]
 srs ansible_host={{ srs_mgmt_ip }} ansible_user={{ srs_user }}
+
+[master]
+srs ansible_host={{ srs_mgmt_ip }} ansible_user={{ srs_user }}
+
+[workers]
+
+[k8s_hosts]
+srs ansible_host={{ srs_mgmt_ip }} ansible_user={{ srs_user }}

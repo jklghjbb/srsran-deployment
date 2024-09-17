@@ -1,0 +1,15 @@
+---
+- name: Ensure Kubernetes repository exists.
+  become: yes
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes
+    enabled: true
+    gpgcheck: true
+    repo_gpgcheck: true
+    baseurl: https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/rpm/
+    gpgkey:
+      - https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/rpm/repodata/repomd.xml.key
+
+- name: Flush handlers
+  meta: flush_handlers

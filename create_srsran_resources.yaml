@@ -29,3 +29,11 @@
         src: "hosts.j2"
         dest: inventory
         force: yes
+
+    - name: Wait for srs node to be reachable
+      wait_for:
+        port: 22
+        host: "{{ srs_mgmt_ip }}"
+        state: started
+        delay: 60
+        timeout: 600

@@ -1,0 +1,48 @@
+- name: Disable SWAP
+  become: yes
+  command: swapoff -a
+
+- name: Disable SWAP in fstab
+  become: yes
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+
+- name: disable SELinux
+  become: yes
+  command: setenforce 0
+  failed_when: false
+
+- name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: 1
+    sysctl_set: yes
+    reload: yes
+    state: present
+  become: yes
+
+- name: ensure net.bridge.bridge-nf-call-iptables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    sysctl_set: yes
+    reload: yes
+    state: present
+  become: yes
+
+- name: ensure net.ipv4.ip_forward is set to 1
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    sysctl_set: yes
+    reload: yes
+  become: yes
+
+- name: Ensure dependencies are installed.
+  become: yes
+  package:
+    name: curl
+    state: present
