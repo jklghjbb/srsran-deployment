@@ -3,3 +3,7 @@
   roles:
     - ensure-containerd
     - k8s-deploy
+    - ensure-helm
+    - ensure-nfs
+    - open5gs-deploy
+    - srs-deploy

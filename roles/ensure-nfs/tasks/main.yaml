@@ -1,0 +1,50 @@
+- name: Install nfs kernel server on worker nodes
+  become: yes
+  apt:
+    name:
+      - nfs-kernel-server
+    state: present
+
+- name: Enable/start nfs-server
+  become: yes
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes
+
+- name: Create srs nfs data directory
+  become: yes
+  file:
+    path: /srs/nfs/data
+    state: directory
+    mode: 0777
+
+- name: export srs nfs data
+  become: yes
+  copy:
+    src: exports
+    dest: /etc/exports
+    mode: 0644
+
+- name: export fs
+  become: yes
+  command: "exportfs -rv"
+
+- name: Add helm repo nfs-subdir-external-provisioner
+  command: >
+    helm repo add --insecure-skip-tls-verify
+    nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+  retries: 5
+  register: nfs_repo_add
+  until: nfs_repo_add.rc == 0
+
+- name: Install nfs-subdir-external-provisioner Chart
+  command: >
+    helm install --insecure-skip-tls-verify
+    nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
+    --set nfs.server="{{ storage_srv }}"
+    --set nfs.path=/srs/nfs/data
+    --set storageClass.archiveOnDelete=false
+    --set storageClass.defaultClass=true
+    --wait --timeout "{{ helm_chart_deploy_timeout }}"
+    

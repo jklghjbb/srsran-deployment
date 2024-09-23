@@ -1,0 +1,16 @@
+---
+- name: pull the upstream srsran helm chart
+  shell: |
+    helm pull {{ srsran_chart_url }} --version {{ srsran_chart_version }}
+
+
+- name: install srsran helm chart with default zmq and ue settings
+  shell: |
+    helm install srsran-5g-zmq {{ srsran_chart_url }} --version {{ srsran_chart_version }} -n open5gs
+
+- name: Wait for all pods are ready
+  command: kubectl wait --for=condition=Ready pod --all --timeout=20s -n open5gs
+  register: result
+  retries: 10
+  delay: 30
+  until: result.rc == 0

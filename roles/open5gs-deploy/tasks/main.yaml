@@ -1,0 +1,24 @@
+---
+- name: pull the upstream 5gs helm chart
+  shell: |
+    helm pull {{ open5gs_chart_url }} --version {{ open5gs_version }}
+
+- name: template out the values file
+  copy:
+    src: "values.yaml"
+    dest: "{{ ansible_user_dir }}/open-5gs-values.yaml"
+    force: yes
+
+- name: create open5gs ns
+  command: kubectl create ns open5gs
+
+- name: install the 5gs helm chart
+  shell: |
+    helm install open5gs {{ open5gs_chart_url }} --version {{ open5gs_version }} --values {{ ansible_user_dir }}/open-5gs-values.yaml -n open5gs
+
+- name: Wait for all pods are ready
+  command: kubectl wait --for=condition=Ready pod --all --timeout=20s -n open5gs
+  register: result
+  retries: 10
+  delay: 30
+  until: result.rc == 0

@@ -1,0 +1,3 @@
+---
+srsran_chart_url: "oci://registry-1.docker.io/gradiant/srsran-5g-zmq"
+srsran_chart_version: "1.0.0"

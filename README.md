@@ -4,9 +4,10 @@
 - ansible 2.15
 
 ## Create a single node VM k8s cluster
+ansible-playbook create_srsran_resources.yaml
 
-## Deploy srsRan with zmq and UE [TODO]
-
+## Deploy srsRan with zmq and UE
+ansible-playbook deploy_srs.yaml -i inventory
 ## Deploy srsran dev env [TODO]
 
 `
