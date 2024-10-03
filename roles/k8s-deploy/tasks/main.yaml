@@ -60,4 +60,3 @@
 - name: Setup worker nodes
   include_tasks: node-setup.yaml
   when: inventory_hostname in groups["workers"]
-

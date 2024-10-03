@@ -1,0 +1,23 @@
+- name: Download Multus CNI manifest
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset-thick.yml
+    dest: "{{ ansible_user_dir }}/multus-daemonset-thick.yml"
+
+- name: Update memory request in Multus CNI manifest
+  ansible.builtin.replace:
+    path: "{{ ansible_user_dir }}/multus-daemonset-thick.yml"
+    regexp: 'memory: "\d+Mi"'
+    replace: 'memory: "200Mi"'
+  register: update_result
+
+- name: Apply the modified Multus CNI manifest
+  ansible.builtin.command:
+    cmd: "kubectl apply -f {{ ansible_user_dir }}/multus-daemonset-thick.yml"
+  when: update_result.changed
+
+- name: Wait for Mutlus pods to come up and in running state
+  command: kubectl get pods -A -o json
+  register: kubectl_get_pods
+  retries: 15
+  delay: 15
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]

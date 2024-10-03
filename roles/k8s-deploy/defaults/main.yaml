@@ -22,7 +22,7 @@ kubernetes_kubeadm_init_extra_opts: ""
 kubernetes_join_command_extra_opts: ""
 
 # Flannel config files.
-kubernetes_flannel_manifest_file: https://raw.githubusercontent.com/coreos/flannel/v0.19.2/Documentation/kube-flannel.yml
+kubernetes_flannel_manifest_file: https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
 kubernetes_pod_network:
   cni: 'flannel'

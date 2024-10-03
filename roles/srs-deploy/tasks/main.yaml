@@ -1,4 +1,16 @@
 ---
+- name: synchronize the midhaul network manifest
+  synchronize:
+    src: bridge_midhaul.yaml
+    dest: "{{ ansible_user_dir }}/bridge_midhaul.yaml"
+
+
+- name: deploy midhaul bridge networks
+  shell: |
+    kubectl apply -f bridge_midhaul.yaml
+  args:
+    chdir: "{{ ansible_user_dir }}" 
+
 - name: pull the upstream srsran helm chart
   shell: |
     helm pull {{ srsran_chart_url }} --version {{ srsran_chart_version }}

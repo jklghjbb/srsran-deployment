@@ -45,7 +45,7 @@
   become: true
 
 - name: Install containerd
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: "{{ containerd_package_name }}"
     state: present
   become: true

@@ -61,12 +61,3 @@
         loop_var: zj_item
       register: flannel_result
       changed_when: "'created' in flannel_result.stdout"
-
-- name: Find etcd process id
-  become: yes
-  command: pgrep etcd
-  register: pid
-
-- name: Set etcd’s disk priority
-  become: yes
-  command: ionice -c2 -n0 -p  {{ pid.stdout }}

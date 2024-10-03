@@ -6,4 +6,5 @@
     - ensure-helm
     - ensure-nfs
     - open5gs-deploy
+    - ensure-multus
     - srs-deploy
