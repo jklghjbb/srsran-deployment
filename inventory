@@ -1,0 +1,10 @@
+[srs]
+srs ansible_host=145.100.135.30 ansible_user=hongjie
+
+[master]
+srs ansible_host=145.100.135.30 ansible_user=hongjie
+
+[workers]
+
+[k8s_hosts]
+srs ansible_host=145.100.135.30 ansible_user=hongjie

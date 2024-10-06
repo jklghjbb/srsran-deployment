@@ -6,12 +6,5 @@
 ## Create a single node VM k8s cluster
 ansible-playbook create_srsran_resources.yaml
 
-## Deploy srsRan with zmq and UE
+## Deploy srsRan split8 with zmq and UE
 ansible-playbook deploy_srs.yaml -i inventory
-## Deploy srsran dev env [TODO]
-
-`
-dev_env: true
-`
-
-create a separate dev VM that will run for dev/debug purpose, and no CU container/component in gNodeB in the running cluster

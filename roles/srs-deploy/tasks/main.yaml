@@ -15,10 +15,52 @@
   shell: |
     helm pull {{ srsran_chart_url }} --version {{ srsran_chart_version }}
 
+- name: Clone the customized helm charts repo
+  git:
+    repo: https://github.com/jklghjbb/5g-charts
+    dest: "{{ ansible_user_dir }}/5g-charts"
+    update: yes
 
-- name: install srsran helm chart with default zmq and ue settings
+- name: install srsran-cu helm chart with default zmq and ue settings
   shell: |
-    helm install srsran-5g-zmq {{ srsran_chart_url }} --version {{ srsran_chart_version }} -n open5gs
+    helm dependency build 
+    helm install srsran-5g-zmq-cu ./ -n open5gs
+  args:
+    chdir: "{{ ansible_user_dir }}/5g-charts/charts/srsran-5g-zmq-cu"
+
+- name: Wait for all pods are ready
+  command: kubectl wait --for=condition=Ready pod --all --timeout=20s -n open5gs
+  register: result
+  retries: 10
+  delay: 30
+  until: result.rc == 0
+
+- name: Get the pod name from the deployment
+  command: kubectl get pods -n open5gs -l app.kubernetes.io/instance=srsran-5g-zmq-cu -o json
+  register: pod_list
+
+- name: Extract the first pod name from the list
+  set_fact:
+    pod_name: "{{ pod_list.stdout | from_json | json_query('items[0].metadata.name') }}"
+
+- name: Get the YAML of the pod
+  command: kubectl get pod {{ pod_name }} -n open5gs -o json
+  register: pod_info
+
+- name: Extract net1 IP address from the pod annotation
+  set_fact:
+    cu_net1_ip: "{{ (pod_info.stdout | from_json).metadata.annotations['k8s.v1.cni.cncf.io/network-status'] | from_json | json_query('[?interface==`net1`].ips[0]') | first }}"
+
+- name: Display net1 IP address
+  debug:
+    msg: "The net1 IP address is {{ cu_net1_ip }}"
+
+- name: install srsran-du helm chart with default zmq and ue settings
+  shell: |
+    helm dependency build
+    helm install srsran-5g-zmq-du ./ -n open5gs --set config.f1ap.addr={{ cu_net1_ip }}
+  args:
+    chdir: "{{ ansible_user_dir }}/5g-charts/charts/srsran-5g-zmq-du"
 
 - name: Wait for all pods are ready
   command: kubectl wait --for=condition=Ready pod --all --timeout=20s -n open5gs
