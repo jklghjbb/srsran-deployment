@@ -44,6 +44,16 @@
     state: present
   become: true
 
+- name: Install gpg
+  ansible.builtin.package:
+    name: "gpg"
+    state: present
+  become: true
+  retries: 10           # Number of retries
+  delay: 15            # Wait for 10 seconds between retries
+  until: result is succeeded  # Retry until the task succeeds
+  register: result     # Register the result to be used in 'until'
+
 - name: Install containerd
   ansible.builtin.package:
     name: "{{ containerd_package_name }}"
