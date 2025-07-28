@@ -1,10 +1,10 @@
 ---
 - hosts: k8s_hosts
   roles:
-    - ensure-containerd
-    - k8s-deploy
-    - ensure-helm
-    - ensure-nfs
-    - open5gs-deploy
-    - ensure-multus
-    - srs-deploy
+   - ensure-containerd
+   - k8s-deploy
+   - ensure-helm
+   - ensure-nfs
+   - open5gs-deploy
+   - ensure-multus
+   - srs-deploy

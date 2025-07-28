@@ -31,9 +31,35 @@
 
 - name: Add containerd repository
   become: true
-  ansible.builtin.apt_repository:
-    repo: "deb {{ containerd_repository_url }} {{ ansible_distribution_release }} main"
-    state: present
+  block:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: "{{ containerd_signing_key }}"
+        state: present
+
+    - name: Add apt repo
+      ansible.builtin.apt_repository:
+        repo: "deb {{ containerd_repository_url }} {{ ansible_distribution_release }} main"
+        state: present
+
+    - name: Update apt cache after adding Docker repo
+      apt:
+        update_cache: yes
   when:
     - containerd_repository_url is defined
     - ansible_os_family == 'Debian'

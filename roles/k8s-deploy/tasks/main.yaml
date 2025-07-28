@@ -60,3 +60,10 @@
 - name: Setup worker nodes
   include_tasks: node-setup.yaml
   when: inventory_hostname in groups["workers"]
+
+- name: Wait for all pods are ready
+  command: kubectl wait --for=condition=Ready pod --all --timeout=20s -n kube-system
+  register: result
+  retries: 10
+  delay: 30
+  until: result.rc == 0

@@ -62,7 +62,7 @@
     - name: install srsran-cu-up helm chart with default zmq and ue settings
       shell: |
         helm dependency build 
-        helm install srsran-5g-cu-up ./ -n open5gs --set config.e1ap.addr={{ cu_cp_net1_ip }}
+        helm install srsran-5g-cu-up ./ -n open5gs --set config.e1ap.cu_cp_addr={{ cu_cp_net1_ip }}
       args:
         chdir: "{{ ansible_user_dir }}/5g-charts/charts/srsran-5g-cu-up"
 
@@ -72,6 +72,10 @@
       retries: 10
       delay: 30
       until: result.rc == 0
+    
+    - name: wait for 10 seconds for cu-up fully up
+      wait_for:
+        timeout: 10
 
 - name: deploy du
   block:

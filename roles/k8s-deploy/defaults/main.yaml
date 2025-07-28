@@ -1,5 +1,5 @@
 ---
-kubernetes_version: '1.27'
+kubernetes_version: '1.31'
 kubernetes_version_kubeadm: 'stable-{{ kubernetes_version }}'
 kubernetes_yum_arch: x86_64
 kubernetes_packages:

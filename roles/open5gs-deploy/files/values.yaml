@@ -25,6 +25,9 @@ smf:
       enabled: false
 upf:
   enabled: true
+  containerSecurityContext:
+    runAsUser: 0
+    runAsGroup: 0
 webui:
   enabled: true
 

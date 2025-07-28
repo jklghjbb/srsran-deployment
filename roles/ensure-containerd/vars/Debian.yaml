@@ -1,1 +1,4 @@
+distribution: ubuntu
 containerd_package_name: containerd
+containerd_repository_url: https://download.docker.com/linux/{{ distribution }}
+containerd_signing_key: https://download.docker.com/linux/{{ distribution }}/gpg
